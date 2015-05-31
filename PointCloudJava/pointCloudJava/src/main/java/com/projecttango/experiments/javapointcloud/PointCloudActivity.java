@@ -114,7 +114,7 @@ public class PointCloudActivity extends Activity implements OnClickListener {
     private boolean mIsTangoServiceConnected;
 
     private boolean saveScan = false;
-    private int scanNumber = 1;
+    int scanNumber = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -356,24 +356,39 @@ public class PointCloudActivity extends Activity implements OnClickListener {
             Log.e(TAG, "Failed to create scan directory");
             return;
         }
-        String filename;
-        filename = "Scan"+String.valueOf(scanNumber)+".data";
+        String filename = String.format("Scan%05d.data", scanNumber);
         scanNumber += 1;
         File file = new File(dir, filename);
         Log.i(TAG, "Writing data to "+file.getAbsolutePath());
-        BufferedOutputStream out;
-        out = new BufferedOutputStream(new FileOutputStream(file));
+
+        // Set up buffers
+        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
         ByteBuffer buf = ByteBuffer.allocate(4*8);
         buf.order(ByteOrder.LITTLE_ENDIAN);
+
+        // Write translation
         for (int i=0; i<pose.translation.length; i++) {
             buf.putDouble(pose.translation[i]);
         }
         out.write(buf.array(), 0, 3*8);
+
+        // Write Rotation
         buf.clear();
         for (int i=0; i<pose.rotation.length; i++) {
             buf.putDouble(pose.rotation[i]);
         }
         out.write(buf.array(), 0, 4 * 8);
+
+        // Write field of view
+        TangoCameraIntrinsics intrinsics = mTango.getCameraIntrinsics(TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
+        double vFOV = 2*Math.atan(0.5*intrinsics.height/intrinsics.fy);
+        double hFOV = 2*Math.atan(0.5*intrinsics.width/intrinsics.fx);
+        buf.clear();
+        buf.putDouble(hFOV);
+        buf.putDouble(vFOV);
+        out.write(buf.array(), 0, 16);
+
+        // Write points
         buf.clear();
         buf.putInt(xyzIj.xyzCount);
         out.write(buf.array(), 0, 4);
@@ -386,10 +401,8 @@ public class PointCloudActivity extends Activity implements OnClickListener {
             buf.putFloat(xyzIj.xyz.get(i));
             out.write(buf.array(), 0, 4);
         }
-//        ByteBuffer xyzBuf = ByteBuffer.allocate(xyzIj.xyzCount*3*4);
-//        xyzBuf.asFloatBuffer().put(xyzIj.xyz);
-//        Log.i(TAG, "Hex="+bytesToHex(xyzBuf.array(), 12));
-//        out.write(xyzBuf.array(), 0, xyzIj.xyzCount*3*4);
+
+        // Write IJ (Not yet implemented in Tango)
         buf.clear();
         int ijCount = xyzIj.ijRows*xyzIj.ijCols;
         Log.i(TAG, "IJCount="+Integer.toString(ijCount));
@@ -397,18 +410,18 @@ public class PointCloudActivity extends Activity implements OnClickListener {
         ijCount=0;
         buf.putInt(ijCount);
         out.write(buf.array(), 0, 4);
-        if (ijCount>0) {
-            byte[] ijBuffer = new byte[ijCount * 4];
-            FileInputStream ijStream = new FileInputStream(
-                    xyzIj.ijParcelFileDescriptor.getFileDescriptor());
-            try {
-                ijStream.read(ijBuffer, 0, ijCount * 4);
-                ijStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            out.write(ijBuffer);
-        }
+//        if (ijCount>0) {
+//            byte[] ijBuffer = new byte[ijCount * 4];
+//            FileInputStream ijStream = new FileInputStream(
+//                    xyzIj.ijParcelFileDescriptor.getFileDescriptor());
+//            try {
+//                ijStream.read(ijBuffer, 0, ijCount * 4);
+//                ijStream.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            out.write(ijBuffer);
+//        }
         out.close();
 
         MediaScannerConnection.scanFile(
