@@ -1,7 +1,8 @@
 
+import os
+import os.path
 import argparse
 import struct
-import os.path
 import random
 import numpy as np
 from matmath import getPC2WorldMatrix, quaternionToAxisAngle
@@ -39,7 +40,7 @@ from PIL import Image
 
 def parseArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument("file", help="Scan file")
+    parser.add_argument("dir", help="Scan directory")
     return parser.parse_args()
 
 def toHex(array):
@@ -71,9 +72,9 @@ def findColor(pic, hFOV, vFOV, pt):
     b = pixel[2]
     return (r, g, b)
 
-def processFile(filename):
-    inp = open(filename, "r")
-    pic = Image.open("20150531/tango00001.png")
+def processFile(datafile, imgfile):
+    inp = open(datafile, "r")
+    pic = Image.open(imgfile)
 
     # Read translation
     trans = np.array(struct.unpack("<3d", inp.read(3*8)))
@@ -93,7 +94,7 @@ def processFile(filename):
     numPts=struct.unpack("<i", inp.read(4))[0]
     print "Numpts", numPts
     cvtmat = getPC2WorldMatrix(trans, quaternion)
-    (base, ext) = os.path.splitext(filename)
+    (base, ext) = os.path.splitext(datafile)
     out = open(base+".ply", "w")
     writeHeader(out, numPts)
     data = [];
@@ -116,6 +117,17 @@ def processFile(filename):
     json.dump({'points': data}, out2)
     out2.close()
 
+def processDir(dir):
+    index = 1
+    while True:
+        datafile = "%s/Scan%05d.data" % (dir, index)
+        imgfile = "%s/tango%05d.png" % (dir, index)
+        if os.access(datafile, os.R_OK) and os.access(imgfile, os.R_OK):
+            processFile(datafile, imgfile)
+        else:
+            break
+        index = index+1
+
 if __name__ == '__main__':
     args = parseArgs()
-    processFile(args.file)
+    processDir(args.dir)
