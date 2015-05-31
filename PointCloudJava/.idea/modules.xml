@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PointCloudJava.iml" filepath="$PROJECT_DIR$/PointCloudJava.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TangoUtils/TangoUtils.iml" filepath="$PROJECT_DIR$/TangoUtils/TangoUtils.iml" />
       <module fileurl="file://$PROJECT_DIR$/pointCloudJava/pointCloudJava.iml" filepath="$PROJECT_DIR$/pointCloudJava/pointCloudJava.iml" />
-      <module fileurl="file://$PROJECT_DIR$/tangoUtils/tangoUtils.iml" filepath="$PROJECT_DIR$/tangoUtils/tangoUtils.iml" />
     </modules>
   </component>
 </project>

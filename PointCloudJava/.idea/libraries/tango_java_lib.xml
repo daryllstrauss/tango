@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tango_java_lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/pointCloudJava/libs/tango_java_lib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

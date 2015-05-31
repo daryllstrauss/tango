@@ -5,6 +5,7 @@ import os.path
 import numpy as np
 from matmath import getPC2WorldMatrix, quaternionToAxisAngle
 from math import acos, pi, sin, degrees
+import json
 
 # Point Cloud Frame
 # With the unit in landscape orientation, screen facing the user:
@@ -39,6 +40,9 @@ def parseArgs():
     parser.add_argument("file", help="Scan file")
     return parser.parse_args()
 
+def toHex(array):
+    return ''.join(format(ord(x), '02x') for x in array)
+
 def processFile(filename):
     inp = open(filename, "r")
     trans = np.array(struct.unpack("<3d", inp.read(3*8)))
@@ -52,14 +56,24 @@ def processFile(filename):
     cvtmat = getPC2WorldMatrix(trans, quaternion)
     (base, ext) = os.path.splitext(filename)
     out = open(base+".xyz", "w")
-    while 1:
+    data = [];
+    for i in xrange(numPts):
         buf = inp.read(3*4)
+        if i == 0 :
+            print "Hex", toHex(buf)
         if buf == '':
             break
         cam = np.array(struct.unpack("<3f", buf))
         dev = np.array([cam[0], cam[1], cam[2], 1])
         imu = dev.dot(cvtmat)
         print >>out, imu[0], imu[1], imu[2]
+        data.append([imu[0], imu[1], imu[2]])
+    ijPts = struct.unpack("<i", inp.read(4))[0]
+    print "ijPts", ijPts
+    out.close()
+    out2 = open(base+".json", "w")
+    json.dump({'data': data}, out2)
+    out2.close()
 
 if __name__ == '__main__':
     args = parseArgs()

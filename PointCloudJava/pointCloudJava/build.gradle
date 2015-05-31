@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 22
+    buildToolsVersion '22.0.0'
 
     defaultConfig {
         applicationId "com.projecttango.experiments.javapointcloud"
-        minSdkVersion 17
-        targetSdkVersion 19
+        minSdkVersion 18
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {
@@ -15,10 +17,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+        debug {
+            debuggable true
+        }
     }
 }
 
 dependencies {
-    compile project(':tangoUtils')
-    compile files('libs/tango_native_service_client_helperlib.jar')
+    compile project(':TangoUtils')
+    compile files('libs/tango_java_lib.jar')
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.google.android.gms:play-services:7.5.0'
 }

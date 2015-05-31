@@ -1,2 +1,2 @@
-include ':tangoUtils'
+include ':TangoUtils'
 include ':pointCloudJava'

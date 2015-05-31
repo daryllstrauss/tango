@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Point;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
@@ -30,8 +31,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 import com.google.atap.tangoservice.Tango;
 import com.google.atap.tangoservice.Tango.OnTangoUpdateListener;
@@ -42,7 +48,11 @@ import com.google.atap.tangoservice.TangoEvent;
 import com.google.atap.tangoservice.TangoInvalidException;
 import com.google.atap.tangoservice.TangoOutOfDateException;
 import com.google.atap.tangoservice.TangoPoseData;
+import com.google.atap.tangoservice.TangoTextureCameraPreview;
 import com.google.atap.tangoservice.TangoXyzIjData;
+import com.google.atap.tangoservice.TangoCameraIntrinsics;
+import com.google.atap.tangoservice.TangoCameraPreview;
+import com.projecttango.tangoutils.Renderer;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -53,6 +63,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Main Activity class for the Point Cloud Sample. Handles the connection to the
@@ -62,13 +74,18 @@ import java.util.ArrayList;
  */
 public class PointCloudActivity extends Activity implements OnClickListener {
 
-    private static final String TAG = PointCloudActivity.class.getSimpleName();
+    static final String TAG = PointCloudActivity.class.getSimpleName();
     private static final int SECS_TO_MILLISECS = 1000;
     private Tango mTango;
     private TangoConfig mConfig;
+    // private TangoCameraPreview tangoCameraPreview;
+    private HashMap<Integer, Integer> cameraTextures_;
+    private FrameRenderer renderer_;
+    private GLSurfaceView view_;
 
     private PCRenderer mRenderer;
     private GLSurfaceView mGLView;
+    private GLSurfaceView mCamView;
 
     private TextView mDeltaTextView;
     private TextView mPoseCountTextView;
@@ -117,24 +134,27 @@ public class PointCloudActivity extends Activity implements OnClickListener {
         mAverageZTextView = (TextView) findViewById(R.id.averageZ);
         mFrequencyTextView = (TextView) findViewById(R.id.frameDelta);
 
+        mSaveButton = (Button) findViewById(R.id.saveButton);
+        mSaveButton.setOnClickListener(this);
         mFirstPersonButton = (Button) findViewById(R.id.first_person_button);
         mFirstPersonButton.setOnClickListener(this);
         mThirdPersonButton = (Button) findViewById(R.id.third_person_button);
         mThirdPersonButton.setOnClickListener(this);
         mTopDownButton = (Button) findViewById(R.id.top_down_button);
         mTopDownButton.setOnClickListener(this);
-        mSaveButton = (Button) findViewById(R.id.saveButton);
-        mSaveButton.setOnClickListener(this);
+
+        mGLView = (GLSurfaceView) findViewById(R.id.gl_surface_view);
+        mGLView.setEGLContextClientVersion(2);
 
         mTango = new Tango(this);
         mConfig = mTango.getConfig(TangoConfig.CONFIG_TYPE_CURRENT);
-        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
+        // tangoCameraPreview = (TangoCameraPreview) findViewById(R.id.cameraView);
 
         int maxDepthPoints = mConfig.getInt("max_point_cloud_elements");
         mRenderer = new PCRenderer(maxDepthPoints);
-        mGLView = (GLSurfaceView) findViewById(R.id.gl_surface_view);
-        mGLView.setEGLContextClientVersion(2);
         mGLView.setRenderer(mRenderer);
+
+        mConfig.putBoolean(TangoConfig.KEY_BOOLEAN_DEPTH, true);
         mGLView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         PackageInfo packageInfo;
@@ -150,6 +170,17 @@ public class PointCloudActivity extends Activity implements OnClickListener {
         mServiceVersion = mConfig.getString("tango_service_library_version");
         mTangoServiceVersionTextView.setText(mServiceVersion);
         mIsTangoServiceConnected = false;
+
+        // Set up OpenGL ES surface
+        mCamView = new GLSurfaceView(this);
+        mCamView.setEGLContextClientVersion(2);
+        mCamView.setDebugFlags(GLSurfaceView.DEBUG_CHECK_GL_ERROR);
+        mCamView.setRenderer(renderer_ = new FrameRenderer(this));
+        mCamView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+        mCamView.setOnClickListener(this);
+        FrameLayout placeholder = (FrameLayout)findViewById(R.id.cameraFrame);
+        placeholder.addView(mCamView);
+        cameraTextures_ = new HashMap<>();
     }
 
     @Override
@@ -208,7 +239,9 @@ public class PointCloudActivity extends Activity implements OnClickListener {
                 Toast.makeText(getApplicationContext(), R.string.TangoError,
                         Toast.LENGTH_SHORT).show();
             }
+            // tangoCameraPreview.connectToTangoCamera(mTango,TangoCameraIntrinsics.TANGO_CAMERA_COLOR);
             setUpExtrinsics();
+            // tangoCameraPreview.bringToFront();
         }
     }
 
@@ -279,33 +312,38 @@ public class PointCloudActivity extends Activity implements OnClickListener {
         String state = Environment.getExternalStorageState();
         Log.i(TAG, "State: "+state);
         boolean v=Environment.MEDIA_MOUNTED.equals(state);
-        Log.i(TAG, "V="+String.valueOf(v));
         return v;
     }
 
     public File getScanStorageDir() {
-        Log.i(TAG, "scanDir");
         // Get the directory for the user's public pictures directory
 //        Date d = new Date();
 //        String dirName = new SimpleDateFormat("Scans-yyyyMMdd-kkmmss").format(d);
         String dirName = "myScans";
-        Log.i(TAG, "Subdir: "+dirName);
         File path = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                 dirName);
-        Log.i(TAG, "Dir: "+path.getAbsolutePath());
         if (!path.exists()) {
             if (!path.mkdirs()) {
                 Log.e(TAG, "Directory not created");
                 return null;
             }
-        } else {
-            Log.i(TAG, "Path exists");
         }
         return path;
     }
 
-    private void saveScanData(TangoPoseData pose, byte[] buffer, int numPts) throws IOException {
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes, int len) {
+        char[] hexChars = new char[len * 2];
+        for ( int j = 0; j < len; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+
+    private void saveScanData(TangoPoseData pose, final TangoXyzIjData xyzIj) throws IOException {
         saveScan = false;
 
         Log.i(TAG, "Saving");
@@ -318,7 +356,6 @@ public class PointCloudActivity extends Activity implements OnClickListener {
             Log.e(TAG, "Failed to create scan directory");
             return;
         }
-        Log.i(TAG, "Dir: "+dir.getAbsolutePath());
         String filename;
         filename = "Scan"+String.valueOf(scanNumber)+".data";
         scanNumber += 1;
@@ -336,11 +373,42 @@ public class PointCloudActivity extends Activity implements OnClickListener {
         for (int i=0; i<pose.rotation.length; i++) {
             buf.putDouble(pose.rotation[i]);
         }
-        out.write(buf.array(), 0, 4*8);
+        out.write(buf.array(), 0, 4 * 8);
         buf.clear();
-        buf.putInt(numPts);
+        buf.putInt(xyzIj.xyzCount);
         out.write(buf.array(), 0, 4);
-        out.write(buffer);
+        Log.i(TAG, "xyzCount="+Integer.toString(xyzIj.xyzCount));
+        for (int i=0; i<10; i++) {
+            Log.i(TAG, Float.toString(xyzIj.xyz.get(i*3))+", "+Float.toString(xyzIj.xyz.get(i*3+1))+", "+Float.toString(xyzIj.xyz.get(i*3+2)));
+        }
+        for (int i=0; i<xyzIj.xyzCount*3; i++) {
+            buf.clear();
+            buf.putFloat(xyzIj.xyz.get(i));
+            out.write(buf.array(), 0, 4);
+        }
+//        ByteBuffer xyzBuf = ByteBuffer.allocate(xyzIj.xyzCount*3*4);
+//        xyzBuf.asFloatBuffer().put(xyzIj.xyz);
+//        Log.i(TAG, "Hex="+bytesToHex(xyzBuf.array(), 12));
+//        out.write(xyzBuf.array(), 0, xyzIj.xyzCount*3*4);
+        buf.clear();
+        int ijCount = xyzIj.ijRows*xyzIj.ijCols;
+        Log.i(TAG, "IJCount="+Integer.toString(ijCount));
+        Log.i(TAG, "ijRows="+Integer.toString(xyzIj.ijRows)+" ijCols="+Integer.toString(xyzIj.ijCols));
+        ijCount=0;
+        buf.putInt(ijCount);
+        out.write(buf.array(), 0, 4);
+        if (ijCount>0) {
+            byte[] ijBuffer = new byte[ijCount * 4];
+            FileInputStream ijStream = new FileInputStream(
+                    xyzIj.ijParcelFileDescriptor.getFileDescriptor());
+            try {
+                ijStream.read(ijBuffer, 0, ijCount * 4);
+                ijStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            out.write(ijBuffer);
+        }
         out.close();
 
         MediaScannerConnection.scanFile(
@@ -364,8 +432,22 @@ public class PointCloudActivity extends Activity implements OnClickListener {
         framePairs.add(new TangoCoordinateFramePair(
                 TangoPoseData.COORDINATE_FRAME_START_OF_SERVICE,
                 TangoPoseData.COORDINATE_FRAME_DEVICE));
+
+        // Attach cameras to textures.
+        synchronized(this) {
+            for (Map.Entry<Integer, Integer> entry : cameraTextures_.entrySet())
+                mTango.connectTextureId(entry.getKey(), entry.getValue());
+        }
         // Listen for new Tango data
         mTango.connectListener(framePairs, new OnTangoUpdateListener() {
+
+            @Override
+            public void onFrameAvailable(final int cameraId) {
+                if (cameraId == TangoCameraIntrinsics.TANGO_CAMERA_COLOR) {
+                    mCamView.requestRender();
+                    // tangoCameraPreview.onFrameAvailable();
+                }
+            }
 
             @Override
             public void onPoseAvailable(final TangoPoseData pose) {
@@ -418,26 +500,18 @@ public class PointCloudActivity extends Activity implements OnClickListener {
 
             @Override
             public void onXyzIjAvailable(final TangoXyzIjData xyzIj) {
+//                if(!mRenderer.isValid()) {
+//                    return;
+//                }
                 mCurrentTimeStamp = (float) xyzIj.timestamp;
                 final float frameDelta = (mCurrentTimeStamp - mXyIjPreviousTimeStamp)
                         * SECS_TO_MILLISECS;
                 mXyIjPreviousTimeStamp = mCurrentTimeStamp;
-                byte[] buffer = new byte[xyzIj.xyzCount * 3 * 4];
-                FileInputStream fileStream = new FileInputStream(
-                        xyzIj.xyzParcelFileDescriptor.getFileDescriptor());
-                try {
-                    fileStream.read(buffer,
-                            xyzIj.xyzParcelFileDescriptorOffset, buffer.length);
-                    fileStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 try {
                     TangoPoseData pointCloudPose = mTango.getPoseAtTime(
                             mCurrentTimeStamp, framePairs.get(0));
 
-                    mRenderer.getPointCloud().UpdatePoints(buffer,
-                            xyzIj.xyzCount);
+                    mRenderer.getPointCloud().UpdatePoints(xyzIj.xyz);
                     mRenderer.getModelMatCalculator()
                             .updatePointCloudModelMatrix(
                                     pointCloudPose.getTranslationAsFloats(),
@@ -447,7 +521,9 @@ public class PointCloudActivity extends Activity implements OnClickListener {
                                     .getPointCloudModelMatrixCopy());
 
                     if (saveScan) {
-                        saveScanData(pointCloudPose, buffer, xyzIj.xyzCount);
+                        saveScanData(pointCloudPose, xyzIj);
+                        renderer_.saveFrame();
+
                     }
                 } catch (TangoErrorException e) {
                     Toast.makeText(getApplicationContext(),
@@ -489,5 +565,38 @@ public class PointCloudActivity extends Activity implements OnClickListener {
                 });
             }
         });
+    }
+
+    public synchronized void attachTexture(final int cameraId, final int textureName) {
+        if (textureName > 0) {
+            Log.i(TAG, "attachTexture");
+            // Link the texture with Tango if the texture changes after
+            // Tango is connected. This generally doesn't happen but
+            // technically could because they happen in separate
+            // threads. Otherwise the link will be made in startTango().
+            if (mIsTangoServiceConnected && cameraTextures_.get(cameraId) != textureName) {
+                mTango.connectTextureId(cameraId, textureName);
+                Log.i(TAG, "connect Texture");
+            }
+            cameraTextures_.put(cameraId, textureName);
+        }
+        else
+            cameraTextures_.remove(cameraId);
+    }
+
+    public Point getCameraFrameSize(int cameraId) {
+        TangoCameraIntrinsics intrinsics = mTango.getCameraIntrinsics(cameraId);
+        return new Point(intrinsics.width, intrinsics.height);
+    }
+
+    public synchronized void updateTexture(int cameraId) {
+        if (mIsTangoServiceConnected) {
+            try {
+                mTango.updateTexture(cameraId);
+            }
+            catch (TangoInvalidException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
