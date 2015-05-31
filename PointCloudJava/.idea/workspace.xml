@@ -31,75 +31,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="41cfe198-7dae-411f-8e00-4851dfe5d331" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/appcompat_v7_22_2_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/mediarouter_v7_22_0_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_ads_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_analytics_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_appindexing_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_appinvite_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_appstate_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_base_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_cast_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_drive_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_fitness_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_games_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_gcm_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_identity_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_location_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_maps_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_nearby_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_panorama_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_plus_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_safetynet_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_wallet_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/play_services_wearable_7_5_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/support_annotations_21_0_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/support_annotations_22_2_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/support_v4_21_0_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/support_v4_22_2_0.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/tango_java_lib.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_19_1_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/tango_native_service_client_helperlib.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/build.gradle" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/AndroidManifest.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/ModelMatCalculator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/Renderer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/CameraFrustum.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/CameraFrustumAndAxis.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/Grid.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/PointCloud.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/RenderUtils.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/Renderable.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/java/com/projecttango/tangoutils/renderables/Trajectory.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/drawable-hdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/drawable-mdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/drawable-xhdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/drawable-xxhdpi/ic_launcher.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/values-v11/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/values-v14/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/values/strings.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/src/main/res/values/styles.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/tangoUtils/tangoUtils.iml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/cache.properties.lock" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/cache.properties.lock" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileHashes.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileHashes.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/fileSnapshots.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/outputFileStates.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/outputFileStates.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin" afterPath="$PROJECT_DIR$/.gradle/2.2.1/taskArtifacts/taskArtifacts.bin" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pointCloudJava/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/pointCloudJava/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pointCloudJava/src/main/java/com/projecttango/experiments/javapointcloud/PointCloudActivity.java" afterPath="$PROJECT_DIR$/pointCloudJava/src/main/java/com/projecttango/experiments/javapointcloud/PointCloudActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PointCloudJava.iml" afterPath="$PROJECT_DIR$/PointCloudJava.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pointCloudJava/src/main/res/layout/activity_jpoint_cloud.xml" afterPath="$PROJECT_DIR$/pointCloudJava/src/main/res/layout/activity_jpoint_cloud.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pointCloudJava/build.gradle" afterPath="$PROJECT_DIR$/pointCloudJava/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gradle.xml" afterPath="$PROJECT_DIR$/.idea/gradle.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pointCloudJava/pointCloudJava.iml" afterPath="$PROJECT_DIR$/pointCloudJava/pointCloudJava.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../reader.py" afterPath="$PROJECT_DIR$/../reader.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/settings.gradle" afterPath="$PROJECT_DIR$/settings.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="PointCloudJava.iws" />
@@ -2788,6 +2724,13 @@
       <option name="number" value="Default" />
       <updated>1420921748085</updated>
     </task>
+    <task id="LOCAL-00001" summary="Grab point clouds and images from the color camera on save">
+      <created>1433036074114</created>
+      <option name="number" value="00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1433036074114</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -2888,7 +2831,8 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Grab point clouds and images from the color camera on save" />
+    <option name="LAST_COMMIT_MESSAGE" value="Grab point clouds and images from the color camera on save" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
